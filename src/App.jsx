@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getToken, getProfile } from './api';
 import Navbar from './components/Navbar';
+import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import ToastHost from './components/Toast';
@@ -100,7 +101,13 @@ export default function App() {
           </div>
         </div>
       ) : (
-        <AuthPage onLogin={() => setIsAuthenticated(true)} />
+        <>
+          {/* Landing : bandeau de marque au-dessus de la page d'authentification */}
+          <Header onLogout={() => {}} />
+          <main className="main main-auth">
+            <AuthPage onLogin={() => setIsAuthenticated(true)} />
+          </main>
+        </>
       )}
 
       <Footer />

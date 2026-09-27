@@ -80,6 +80,13 @@ h1, h2, h3 {
   background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--success));
 }
 
+/* Landing avec Header au-dessus : la carte d'auth s'ajuste sans ecraser le footer */
+.main-auth {
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -848,9 +855,10 @@ textarea {
 }
 
 .footer-inner {
-  max-width: 1200px;
+  /* Aligne sur la largeur du contenu (comme .main) et plus compact */
+  max-width: 860px;
   margin: 0 auto;
-  padding: 1.1rem 1rem;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
