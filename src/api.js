@@ -112,3 +112,47 @@ export function deleteTask(id) {
 export function deleteCompleted() {
   return request('/tasks/completed', { method: 'DELETE' });
 }
+
+// --- Endpoints profil (JWT) ---
+
+/** Recupere le profil de l'utilisateur connecte. */
+export function getProfile() {
+  return request('/profile');
+}
+
+/** Met a jour le profil (displayName, photo, language, theme, timezone). */
+export function updateProfile(profile) {
+  return request('/profile', { method: 'PUT', body: profile });
+}
+
+/** Change le mot de passe (currentPassword, newPassword). */
+export function changePassword(currentPassword, newPassword) {
+  return request('/profile/password', { method: 'PUT', body: { currentPassword, newPassword } });
+}
+
+// --- Endpoints notifications (JWT) ---
+
+/** Liste les notifications de l'utilisateur (les plus recentes d'abord). */
+export function getNotifications() {
+  return request('/notifications');
+}
+
+/** Nombre de notifications non lues. Renvoie { count }. */
+export function getUnreadCount() {
+  return request('/notifications/unread');
+}
+
+/** Marque une notification comme lue. */
+export function markNotificationAsRead(id) {
+  return request(`/notifications/${id}/read`, { method: 'PUT' });
+}
+
+/** Marque toutes les notifications comme lues. */
+export function markAllNotificationsAsRead() {
+  return request('/notifications/read-all', { method: 'PUT' });
+}
+
+/** Supprime une notification. */
+export function deleteNotification(id) {
+  return request(`/notifications/${id}`, { method: 'DELETE' });
+}

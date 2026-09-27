@@ -7,6 +7,7 @@ import com.todoapp.entity.User;
 import com.todoapp.exception.ApiException;
 import com.todoapp.repository.TaskRepository;
 import com.todoapp.repository.UserRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +23,13 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository,
+                       @Lazy NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     /** Renvoie toutes les taches de l'utilisateur (plus recentes d'abord). */
@@ -51,9 +55,14 @@ public class TaskService {
         task.setDone(request.isDone());
         task.setUser(user);
 
-        return TaskResponse.fromEntity(taskRepository.save(task));
-    }
+        Task saved = taskRepository.save(task);
 
+        // Notification in-app associee a la creation
+        notificationService.create(username, "task_created",
+                "Tache creee : " + saved.getTitle());
+
+        return TaskResponse.fromEntity(saved);
+    }
     /** Modifie une tache existante si elle appartient a l'utilisateur. */
     @Transactional
     public TaskResponse updateTask(String username, Long taskId, TaskRequest request) {
@@ -63,7 +72,13 @@ public class TaskService {
         task.setDescription(request.getDescription() == null ? null : request.getDescription().trim());
         task.setDone(request.isDone());
 
-        return TaskResponse.fromEntity(taskRepository.save(task));
+        Task saved = taskRepository.save(task);
+
+        // Notification in-app : tache modifiee
+        notificationService.create(username, "task_updated",
+                "Tache modifiee : " + saved.getTitle());
+
+        return TaskResponse.fromEntity(saved);
     }
 
     /** Bascule l'etat done d'une tache. */
@@ -71,14 +86,26 @@ public class TaskService {
     public TaskResponse toggleTask(String username, Long taskId) {
         Task task = requireOwnedTask(username, taskId);
         task.setDone(!task.isDone());
-        return TaskResponse.fromEntity(taskRepository.save(task));
+        Task saved = taskRepository.save(task);
+
+        // Notification in-app : passage a l'etat termine (ou reactivation)
+        notificationService.create(username,
+                saved.isDone() ? "task_completed" : "task_reopened",
+                (saved.isDone() ? "Tache terminee : " : "Tache reactivee : ") + saved.getTitle());
+
+        return TaskResponse.fromEntity(saved);
     }
 
     /** Supprime une tache si elle appartient a l'utilisateur. */
     @Transactional
     public void deleteTask(String username, Long taskId) {
         Task task = requireOwnedTask(username, taskId);
+        String title = task.getTitle();
         taskRepository.delete(task);
+
+        // Notification in-app : tache supprimee
+        notificationService.create(username, "task_deleted",
+                "Tache supprimee : " + title);
     }
 
     /** Supprime toutes les taches terminees de l'utilisateur. */

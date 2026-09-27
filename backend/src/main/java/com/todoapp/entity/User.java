@@ -26,6 +26,31 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
+    /** Nom affiche optionnel (profil). */
+    @Size(max = 100, message = "Le nom affiche ne doit pas depasser 100 caracteres")
+    @Column(length = 100)
+    private String displayName;
+
+    /** Photo de profil : data-URL (image petite) ou URL externe, validee. */
+    @Size(max = 500000, message = "Photo trop volumineuse")
+    @Column(length = 500000, columnDefinition = "TEXT")
+    private String photo;
+
+    /** Langue de l'interface : "fr" ou "en" (preference i18n). */
+    @Size(max = 5)
+    @Column(length = 5)
+    private String language = "fr";
+
+    /** Theme de l'interface : "dark" ou "light" (preference). */
+    @Size(max = 10)
+    @Column(length = 10)
+    private String theme = "dark";
+
+    /** Fuseau horaire (profil). */
+    @Size(max = 50)
+    @Column(length = 50)
+    private String timezone = "UTC";
+
     /** Mot de passe hache BCrypt (60 caracteres). */
     @NotBlank(message = "Le mot de passe est obligatoire")
     @Column(nullable = false, length = 100)
@@ -57,6 +82,46 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 
     public String getPasswordHash() {
