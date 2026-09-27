@@ -1,0 +1,12 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# Secrets : jamais dans le repo (uniquement .env.example est committe)
+.env
+.env.local
+.env.*.local
+
+# Maven
+target/

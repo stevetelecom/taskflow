@@ -1,0 +1,44 @@
+# =====================================================================
+# Configuration de l'application backend
+# SECRETS : charges depuis le fichier .env (spring-dotenv) ou les
+# variables d'environnement systeme -- JAMAIS en clair ici (securite).
+# =====================================================================
+spring:
+  application:
+    name: todo-backend
+
+  # --- Connexion MySQL (utilisateur applicatif, jamais root) ---
+  datasource:
+    url: jdbc:mysql://localhost:3306/todo_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # --- JPA / Hibernate ---
+  jpa:
+    hibernate:
+      ddl-auto: update        # Cree/met a jour les tables automatiquement
+    show-sql: false           # Desactive en standard (activable via profil dev)
+    properties:
+      hibernate:
+        format_sql: true
+
+  # --- Jackson ---
+  jackson:
+    default-property-inclusion: non_null
+
+# --- Serveur ---
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# --- JWT : cle secrete et duree, fournis par l'environnement ---
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration-ms: ${JWT_EXPIRATION_MS}
+
+logging:
+  level:
+    com.todoapp: info
